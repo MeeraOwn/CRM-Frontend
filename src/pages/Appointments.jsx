@@ -35,15 +35,21 @@ export default function Appointments() {
     last_name: "",
     email: "",
     phone: "",
+    brokerNumber: "",
+    customerTitle: "",
+    customerDisplayName: "",
+    customerDOB: "",
+    customerStreet: "",
+    customerHouseNumber: "",
+    customerPostalCode: "",
+    customerCity: "",
+    customerStatus: "",
+    description: "",
   });
 
   // Provision: allow opening an existing customer's detail by ID.
   // This is useful for adding history to customers without upcoming appointments.
   const [openCustomerId, setOpenCustomerId] = useState("");
-
-  // Filters (client-side) for quick search in the appointment list.
-  const [filterCustomerId, setFilterCustomerId] = useState("");
-  const [filterFirstName, setFilterFirstName] = useState("");
 
   const fetchAppointments = async () => {
     setLoading(true);
@@ -86,7 +92,22 @@ export default function Appointments() {
       });
       const created = resp?.data;
       setCreatingCustomer(false);
-      setNewCustomer({ first_name: "", last_name: "", email: "", phone: "" });
+      setNewCustomer({
+        first_name: "",
+        last_name: "",
+        email: "",
+        phone: "",
+        brokerNumber: "",
+        customerTitle: "",
+        customerDisplayName: "",
+        customerDOB: "",
+        customerStreet: "",
+        customerHouseNumber: "",
+        customerPostalCode: "",
+        customerCity: "",
+        customerStatus: "",
+        description: "",
+      });
       if (created?.id) navigate(`/customers/${created.id}`);
     } catch (err) {
       setError(err?.message || "Failed to create customer");
@@ -109,23 +130,8 @@ export default function Appointments() {
     navigate("/login");
   };
 
-  const filteredAppointments = useMemo(() => {
-    const idNeedle = String(filterCustomerId || "").trim();
-    const firstNeedle = String(filterFirstName || "").trim().toLowerCase();
-
-    return appointments.filter((row) => {
-      const rowCustomerId = row?.customer_id == null ? "" : String(row.customer_id);
-      const rowFirstName = row?.first_name == null ? "" : String(row.first_name).toLowerCase();
-
-      const matchesCustomerId = idNeedle ? rowCustomerId.includes(idNeedle) : true;
-      const matchesFirstName = firstNeedle ? rowFirstName.includes(firstNeedle) : true;
-
-      return matchesCustomerId && matchesFirstName;
-    });
-  }, [appointments, filterCustomerId, filterFirstName]);
-
   return (
-    <div style={{ maxWidth: 1100, margin: "30px auto", textAlign: "left" }}>
+    <div style={{ maxWidth: 1100, margin: "10px 10px", textAlign: "left" }}>
       <div
         style={{
           display: "flex",
@@ -155,28 +161,6 @@ export default function Appointments() {
         <button type="submit">Open</button>
       </form>
 
-      <div style={{ marginBottom: 18, display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
-        <input
-          placeholder="Filter by Customer ID"
-          value={filterCustomerId}
-          onChange={(e) => setFilterCustomerId(e.target.value)}
-        />
-        <input
-          placeholder="Filter by First Name"
-          value={filterFirstName}
-          onChange={(e) => setFilterFirstName(e.target.value)}
-        />
-        <button
-          type="button"
-          onClick={() => {
-            setFilterCustomerId("");
-            setFilterFirstName("");
-          }}
-        >
-          Clear
-        </button>
-      </div>
-
       {canCreateCustomer ? (
         <div style={{ marginBottom: 14 }}>
           <button onClick={() => setCreatingCustomer((v) => !v)}>
@@ -186,20 +170,36 @@ export default function Appointments() {
       ) : null}
 
       {creatingCustomer ? (
-        <form onSubmit={onCreateCustomer} style={{ display: "grid", gap: 10, marginBottom: 18 }}>
-          <h4 style={{ margin: 0 }}>New Customer</h4>
+        <form
+          onSubmit={onCreateCustomer}
+          style={{
+            display: "grid",
+            gridTemplateColumns: "210px 1fr",
+            gap: 10,
+            columnGap: 12,
+            rowGap: 10,
+            alignItems: "center",
+            marginBottom: 18,
+          }}
+        >
+          <h4 style={{ margin: 0, gridColumn: "1 / -1" }}>New Customer</h4>
+          <label style={{ fontSize: 14, opacity: 0.85 }}>First Name</label>
           <input
             placeholder="First name"
             value={newCustomer.first_name}
             onChange={(e) => setNewCustomer((p) => ({ ...p, first_name: e.target.value }))}
             required
           />
+
+          <label style={{ fontSize: 14, opacity: 0.85 }}>Last Name</label>
           <input
             placeholder="Last name"
             value={newCustomer.last_name}
             onChange={(e) => setNewCustomer((p) => ({ ...p, last_name: e.target.value }))}
             required
           />
+
+          <label style={{ fontSize: 14, opacity: 0.85 }}>Email</label>
           <input
             placeholder="Email"
             value={newCustomer.email}
@@ -207,13 +207,96 @@ export default function Appointments() {
             type="email"
             required
           />
+
+          <label style={{ fontSize: 14, opacity: 0.85 }}>Phone</label>
           <input
             placeholder="Phone"
             value={newCustomer.phone}
             onChange={(e) => setNewCustomer((p) => ({ ...p, phone: e.target.value }))}
             required
           />
-          <button type="submit" disabled={loading}>
+
+          <label style={{ fontSize: 14, opacity: 0.85 }}>Broker Number</label>
+          <input
+            placeholder="Broker Number"
+            value={newCustomer.brokerNumber}
+            onChange={(e) => setNewCustomer((p) => ({ ...p, brokerNumber: e.target.value }))}
+          />
+
+          <label style={{ fontSize: 14, opacity: 0.85 }}>Customer Title</label>
+          <input
+            placeholder="Customer Title"
+            value={newCustomer.customerTitle}
+            onChange={(e) => setNewCustomer((p) => ({ ...p, customerTitle: e.target.value }))}
+          />
+
+          <label style={{ fontSize: 14, opacity: 0.85 }}>Customer Display Name</label>
+          <input
+            placeholder="Customer Display Name"
+            value={newCustomer.customerDisplayName}
+            onChange={(e) =>
+              setNewCustomer((p) => ({ ...p, customerDisplayName: e.target.value }))
+            }
+          />
+
+          <label style={{ fontSize: 14, opacity: 0.85 }}>Customer DOB</label>
+          <input
+            type="date"
+            value={newCustomer.customerDOB}
+            onChange={(e) => setNewCustomer((p) => ({ ...p, customerDOB: e.target.value }))}
+          />
+
+          <label style={{ fontSize: 14, opacity: 0.85 }}>Customer Street</label>
+          <input
+            placeholder="Customer Street"
+            value={newCustomer.customerStreet}
+            onChange={(e) =>
+              setNewCustomer((p) => ({ ...p, customerStreet: e.target.value }))
+            }
+          />
+
+          <label style={{ fontSize: 14, opacity: 0.85 }}>House Number</label>
+          <input
+            placeholder="House Number"
+            value={newCustomer.customerHouseNumber}
+            onChange={(e) =>
+              setNewCustomer((p) => ({ ...p, customerHouseNumber: e.target.value }))
+            }
+          />
+
+          <label style={{ fontSize: 14, opacity: 0.85 }}>Postal Code</label>
+          <input
+            placeholder="Postal Code"
+            value={newCustomer.customerPostalCode}
+            onChange={(e) =>
+              setNewCustomer((p) => ({ ...p, customerPostalCode: e.target.value }))
+            }
+          />
+
+          <label style={{ fontSize: 14, opacity: 0.85 }}>City</label>
+          <input
+            placeholder="City"
+            value={newCustomer.customerCity}
+            onChange={(e) => setNewCustomer((p) => ({ ...p, customerCity: e.target.value }))}
+          />
+
+          <label style={{ fontSize: 14, opacity: 0.85 }}>Customer Status</label>
+          <input
+            placeholder="Customer Status"
+            value={newCustomer.customerStatus}
+            onChange={(e) =>
+              setNewCustomer((p) => ({ ...p, customerStatus: e.target.value }))
+            }
+          />
+
+          <label style={{ fontSize: 14, opacity: 0.85 }}>Description</label>
+          <textarea
+            placeholder="Description"
+            value={newCustomer.description}
+            onChange={(e) => setNewCustomer((p) => ({ ...p, description: e.target.value }))}
+            rows={3}
+          />
+          <button type="submit" disabled={loading} style={{ gridColumn: "1 / -1" }}>
             {loading ? "Saving..." : "Create"}
           </button>
         </form>
@@ -240,7 +323,7 @@ export default function Appointments() {
           </tr>
         </thead>
         <tbody>
-          {filteredAppointments.map((row) => {
+          {appointments.map((row) => {
             const c = getRowColor({ date: row.date, time: row.time });
             return (
               <tr key={row.history_id} style={{ background: c.bg }}>
@@ -268,7 +351,7 @@ export default function Appointments() {
               </tr>
             );
           })}
-          {filteredAppointments.length === 0 ? (
+          {appointments.length === 0 ? (
             <tr>
               <td colSpan="7" style={{ padding: 16, opacity: 0.8 }}>
                 No appointments found.

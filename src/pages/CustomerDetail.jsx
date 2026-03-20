@@ -167,7 +167,7 @@ export default function CustomerDetail() {
   };
 
   return (
-    <div style={{ maxWidth: 1100, margin: "30px auto", textAlign: "left" }}>
+    <div style={{ maxWidth: 1100, margin: "10px 10px", textAlign: "left" }}>
       <div
         style={{
           display: "flex",
