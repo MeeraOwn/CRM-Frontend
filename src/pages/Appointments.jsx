@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../lib/api";
+import  formatDate from "../config/date";
 import { decodeJwt } from "../lib/jwt";
 
 function getRowColor({ date, time }) {
@@ -330,7 +331,7 @@ export default function Appointments() {
                 <td style={{ padding: "10px 6px" }}>{row.customer_id}</td>
                 <td style={{ padding: "10px 6px" }}>{row.first_name}</td>
                 <td style={{ padding: "10px 6px" }}>{row.last_name}</td>
-                <td style={{ padding: "10px 6px" }}>{row.date}</td>
+                <td style={{ padding: "10px 6px" }}>{formatDate(row.date)}</td>
                 <td style={{ padding: "10px 6px" }}>{row.time?.slice(0, 5)}</td>
                 <td style={{ padding: "10px 6px" }}>
                   {row.description}

@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { apiFetch } from "../lib/api";
 import { decodeJwt } from "../lib/jwt";
+import  formatDate from "../config/date";
 
 function formatArt(art) {
   if (!art) return "";
@@ -322,7 +323,7 @@ export default function CustomerDetail() {
                               {formatArt(row.art)}
                               {row.completed ? <span style={{ marginLeft: 6, fontSize: 12, opacity: 0.7 }}>(Completed)</span> : null}
                             </td>
-                            <td style={{ padding: "8px 6px" }}>{row.date}</td>
+                            <td style={{ padding: "8px 6px" }}>{formatDate(row.date)}</td>
                             <td style={{ padding: "8px 6px" }}>{String(row.time).slice(0, 5)}</td>
                             <td style={{ padding: "8px 6px" }}>{row.description}</td>
                             <td style={{ padding: "8px 6px" }}>
