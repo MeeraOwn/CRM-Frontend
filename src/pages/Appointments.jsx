@@ -41,6 +41,10 @@ export default function Appointments() {
   // This is useful for adding history to customers without upcoming appointments.
   const [openCustomerId, setOpenCustomerId] = useState("");
 
+  // Filters (client-side) for quick search in the appointment list.
+  const [filterCustomerId, setFilterCustomerId] = useState("");
+  const [filterFirstName, setFilterFirstName] = useState("");
+
   const fetchAppointments = async () => {
     setLoading(true);
     setError("");
@@ -99,9 +103,45 @@ export default function Appointments() {
     navigate(`/customers/${id}`);
   };
 
+  const signOut = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    navigate("/login");
+  };
+
+  const filteredAppointments = useMemo(() => {
+    const idNeedle = String(filterCustomerId || "").trim();
+    const firstNeedle = String(filterFirstName || "").trim().toLowerCase();
+
+    return appointments.filter((row) => {
+      const rowCustomerId = row?.customer_id == null ? "" : String(row.customer_id);
+      const rowFirstName = row?.first_name == null ? "" : String(row.first_name).toLowerCase();
+
+      const matchesCustomerId = idNeedle ? rowCustomerId.includes(idNeedle) : true;
+      const matchesFirstName = firstNeedle ? rowFirstName.includes(firstNeedle) : true;
+
+      return matchesCustomerId && matchesFirstName;
+    });
+  }, [appointments, filterCustomerId, filterFirstName]);
+
   return (
     <div style={{ maxWidth: 1100, margin: "30px auto", textAlign: "left" }}>
-      <h2>Appointment List</h2>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 12,
+          marginBottom: 18,
+        }}
+      >
+        <div style={{ fontWeight: 700, opacity: 0.85 }}>CRM Assignment</div>
+        <button type="button" onClick={signOut}>
+          Sign Out
+        </button>
+      </div>
+
+      <h2 style={{ marginTop: 0 }}>Appointment List</h2>
 
       <form
         onSubmit={onOpenCustomer}
@@ -114,6 +154,28 @@ export default function Appointments() {
         />
         <button type="submit">Open</button>
       </form>
+
+      <div style={{ marginBottom: 18, display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+        <input
+          placeholder="Filter by Customer ID"
+          value={filterCustomerId}
+          onChange={(e) => setFilterCustomerId(e.target.value)}
+        />
+        <input
+          placeholder="Filter by First Name"
+          value={filterFirstName}
+          onChange={(e) => setFilterFirstName(e.target.value)}
+        />
+        <button
+          type="button"
+          onClick={() => {
+            setFilterCustomerId("");
+            setFilterFirstName("");
+          }}
+        >
+          Clear
+        </button>
+      </div>
 
       {canCreateCustomer ? (
         <div style={{ marginBottom: 14 }}>
@@ -178,7 +240,7 @@ export default function Appointments() {
           </tr>
         </thead>
         <tbody>
-          {appointments.map((row) => {
+          {filteredAppointments.map((row) => {
             const c = getRowColor({ date: row.date, time: row.time });
             return (
               <tr key={row.history_id} style={{ background: c.bg }}>
@@ -206,7 +268,7 @@ export default function Appointments() {
               </tr>
             );
           })}
-          {appointments.length === 0 ? (
+          {filteredAppointments.length === 0 ? (
             <tr>
               <td colSpan="7" style={{ padding: 16, opacity: 0.8 }}>
                 No appointments found.

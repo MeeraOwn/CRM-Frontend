@@ -23,6 +23,8 @@ export default function CustomerDetail() {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [customerError, setCustomerError] = useState("");
+  const [historyError, setHistoryError] = useState("");
 
   const [showAdd, setShowAdd] = useState(false);
   const [form, setForm] = useState({
@@ -45,13 +47,29 @@ export default function CustomerDetail() {
   const fetchAll = async () => {
     setLoading(true);
     setError("");
+    setCustomerError("");
+    setHistoryError("");
     try {
-      const [custResp, histResp] = await Promise.all([
+      // Fetch independently so a failure in customer lookup
+      // doesn't block the History tab (so you can still add history).
+      const [custResp, histResp] = await Promise.allSettled([
         apiFetch(`/customers/${customerId}`),
         apiFetch(`/customers/${customerId}/history`),
       ]);
-      setCustomer(custResp?.data || null);
-      setHistory(histResp?.data || []);
+
+      if (custResp.status === "fulfilled") {
+        setCustomer(custResp.value?.data || null);
+      } else {
+        setCustomer(null);
+        setCustomerError(custResp.reason?.message || "Failed to load customer");
+      }
+
+      if (histResp.status === "fulfilled") {
+        setHistory(histResp.value?.data || []);
+      } else {
+        setHistory([]);
+        setHistoryError(histResp.reason?.message || "Failed to load history");
+      }
     } catch (err) {
       setError(err?.message || "Failed to load customer");
     } finally {
@@ -142,9 +160,31 @@ export default function CustomerDetail() {
     }
   };
 
+  const signOut = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    navigate("/login");
+  };
+
   return (
     <div style={{ maxWidth: 1100, margin: "30px auto", textAlign: "left" }}>
-      <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 12,
+          marginBottom: 18,
+        }}
+      >
+        <div style={{ fontWeight: 700, opacity: 0.85 }}>CRM Assignment</div>
+        <button type="button" onClick={signOut}>
+          Sign Out
+        </button>
+        
+      </div>
+
+      <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 10 }}>
         <button onClick={() => navigate("/appointments")}>Back</button>
         <h2 style={{ margin: 0 }}>Customer Detail</h2>
       </div>
@@ -157,23 +197,8 @@ export default function CustomerDetail() {
 
       {loading ? <div style={{ marginTop: 10 }}>Loading...</div> : null}
 
-      {customer ? (
+      {!loading ? (
         <div style={{ marginTop: 14 }}>
-          <div style={{ marginBottom: 10, opacity: 0.85 }}>
-            <div>
-              <b>Customer ID:</b> {customer.id}
-            </div>
-            <div>
-              <b>Name:</b> {customer.first_name} {customer.last_name}
-            </div>
-            <div>
-              <b>Email:</b> {customer.email}
-            </div>
-            <div>
-              <b>Phone:</b> {customer.phone}
-            </div>
-          </div>
-
           <div style={{ display: "flex", gap: 10, marginBottom: 10 }}>
             <button onClick={() => setTab("info")} style={tab === "info" ? { fontWeight: "bold" } : null}>
               Customer Info
@@ -188,12 +213,38 @@ export default function CustomerDetail() {
 
           {tab === "info" ? (
             <div>
-              <p style={{ marginTop: 0 }}>
-                Basic customer info is shown above. Use the <b>History</b> tab to add/update history entries.
-              </p>
+              {customerError ? (
+                <div style={{ color: "crimson", marginBottom: 10 }}>
+                  <b>Customer:</b> {customerError}
+                </div>
+              ) : null}
+
+              {customer ? (
+                <div style={{ marginBottom: 10, opacity: 0.85 }}>
+                  <div>
+                    <b>Customer ID:</b> {customer.id}
+                  </div>
+                  <div>
+                    <b>Name:</b> {customer.first_name} {customer.last_name}
+                  </div>
+                  <div>
+                    <b>Email:</b> {customer.email}
+                  </div>
+                  <div>
+                    <b>Phone:</b> {customer.phone}
+                  </div>
+                </div>
+              ) : (
+                <div style={{ opacity: 0.7 }}>No customer data available.</div>
+              )}
             </div>
           ) : (
             <div>
+              {historyError ? (
+                <div style={{ color: "crimson", marginBottom: 10 }}>
+                  <b>History:</b> {historyError}
+                </div>
+              ) : null}
               <div style={{ marginBottom: 12 }}>
                 <button onClick={() => setShowAdd((v) => !v)}>Add New History Entry</button>
               </div>
@@ -202,9 +253,9 @@ export default function CustomerDetail() {
                 <form onSubmit={onAddHistory} style={{ display: "grid", gap: 10, marginBottom: 16 }}>
                   <h4 style={{ margin: 0 }}>New History Entry</h4>
 
-                  <input value={customer.id} readOnly />
-                  <input value={customer.first_name} readOnly />
-                  <input value={customer.last_name} readOnly />
+                  <input value={customer?.id ?? customerId} readOnly />
+                  <input value={customer?.first_name ?? ""} readOnly />
+                  <input value={customer?.last_name ?? ""} readOnly />
 
                   <input
                     value={form.subject}

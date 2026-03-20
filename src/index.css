@@ -109,3 +109,111 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+
+/* App-wide basic theme (background + controls) */
+body {
+  background: radial-gradient(1200px 700px at 10% 10%, rgba(170, 59, 255, 0.18), transparent 55%),
+    radial-gradient(900px 600px at 90% 20%, rgba(170, 59, 255, 0.12), transparent 50%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0));
+  background-attachment: fixed;
+}
+
+#root {
+  border-radius: 16px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(10px);
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background: radial-gradient(1200px 700px at 10% 10%, rgba(192, 132, 252, 0.18), transparent 55%),
+      radial-gradient(900px 600px at 90% 20%, rgba(192, 132, 252, 0.12), transparent 50%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0));
+  }
+
+  #root {
+    background: rgba(22, 23, 29, 0.72);
+  }
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: var(--sans);
+}
+
+button {
+  background: var(--accent);
+  color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: transform 0.05s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+button:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--accent) 85%, #ffffff 15%);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
+input,
+select,
+textarea {
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  outline: none;
+  color: var(--text);
+}
+
+@media (prefers-color-scheme: dark) {
+  input,
+  select,
+  textarea {
+    background: rgba(31, 32, 40, 0.55);
+  }
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  border-color: var(--accent-border);
+  box-shadow: 0 0 0 3px var(--accent-bg);
+}
+
+table {
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+@media (prefers-color-scheme: dark) {
+  table {
+    background: rgba(31, 32, 40, 0.35);
+  }
+}
+
+th {
+  background: var(--accent-bg);
+  color: var(--text-h);
+  text-align: left;
+}
+
+td {
+  border-top: 1px solid var(--border);
+}
