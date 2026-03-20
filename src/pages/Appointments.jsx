@@ -37,6 +37,10 @@ export default function Appointments() {
     phone: "",
   });
 
+  // Provision: allow opening an existing customer's detail by ID.
+  // This is useful for adding history to customers without upcoming appointments.
+  const [openCustomerId, setOpenCustomerId] = useState("");
+
   const fetchAppointments = async () => {
     setLoading(true);
     setError("");
@@ -87,9 +91,29 @@ export default function Appointments() {
     }
   };
 
+  const onOpenCustomer = (e) => {
+    e.preventDefault();
+    setError("");
+    const id = String(openCustomerId || "").trim();
+    if (!id) return;
+    navigate(`/customers/${id}`);
+  };
+
   return (
     <div style={{ maxWidth: 1100, margin: "30px auto", textAlign: "left" }}>
       <h2>Appointment List</h2>
+
+      <form
+        onSubmit={onOpenCustomer}
+        style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 18, flexWrap: "wrap" }}
+      >
+        <input
+          placeholder="Open Customer Detail by Customer ID"
+          value={openCustomerId}
+          onChange={(e) => setOpenCustomerId(e.target.value)}
+        />
+        <button type="submit">Open</button>
+      </form>
 
       {canCreateCustomer ? (
         <div style={{ marginBottom: 14 }}>
