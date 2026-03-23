@@ -2,7 +2,8 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { apiFetch } from "../lib/api";
 import { decodeJwt } from "../lib/jwt";
-import  formatDate from "../config/date";
+import formatDate from "../config/date";
+import AppHeader from "../components/AppHeader";
 
 function formatArt(art) {
   if (!art) return "";
@@ -169,21 +170,7 @@ export default function CustomerDetail() {
 
   return (
     <div style={{ maxWidth: 1100, margin: "10px 10px", textAlign: "left" }}>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: 12,
-          marginBottom: 18,
-        }}
-      >
-        <div style={{ fontWeight: 700, opacity: 0.85 }}>CRM Assignment</div>
-        <button type="button" onClick={signOut}>
-          Sign Out
-        </button>
-        
-      </div>
+      <AppHeader onSignOut={signOut} />
 
       <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 10 }}>
         <button onClick={() => navigate("/appointments")}>Back</button>

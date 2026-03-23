@@ -1,22 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../lib/api";
-import  formatDate from "../config/date";
+import formatDate from "../config/date";
 import { decodeJwt } from "../lib/jwt";
-
-function getRowColor({ date, time }) {
-  // Assumes `date` is YYYY-MM-DD and `time` is HH:MM or HH:MM:SS.
-  const dt = new Date(`${date}T${String(time).slice(0, 5)}`);
-  const now = new Date();
-  const isToday = dt.toDateString() === now.toDateString();
-
-  if (!Number.isNaN(dt.getTime())) {
-    if (isToday) return { bg: "#d7f7df", label: "Today" };
-    if (dt.getTime() < now.getTime()) return { bg: "#ffd7d7", label: "Past" };
-    return { bg: "#fff3c4", label: "Future" };
-  }
-  return { bg: "transparent", label: "" };
-}
+import { getAppointmentRowColor } from "../lib/appointmentRowColor";
+import AppHeader from "../components/AppHeader";
 
 export default function Appointments() {
   const navigate = useNavigate();
@@ -133,20 +121,7 @@ export default function Appointments() {
 
   return (
     <div style={{ maxWidth: 1100, margin: "10px 10px", textAlign: "left" }}>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: 12,
-          marginBottom: 18,
-        }}
-      >
-        <div style={{ fontWeight: 700, opacity: 0.85 }}>CRM Assignment</div>
-        <button type="button" onClick={signOut}>
-          Sign Out
-        </button>
-      </div>
+      <AppHeader onSignOut={signOut} />
 
       <h2 style={{ marginTop: 0 }}>Appointment List</h2>
 
@@ -325,7 +300,7 @@ export default function Appointments() {
         </thead>
         <tbody>
           {appointments.map((row) => {
-            const c = getRowColor({ date: row.date, time: row.time });
+            const c = getAppointmentRowColor({ date: row.date, time: row.time });
             return (
               <tr key={row.history_id} style={{ background: c.bg }}>
                 <td style={{ padding: "10px 6px" }}>{row.customer_id}</td>
