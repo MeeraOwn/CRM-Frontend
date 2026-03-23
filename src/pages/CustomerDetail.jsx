@@ -210,7 +210,13 @@ export default function CustomerDetail() {
               {customer ? (
                 <div style={{ marginBottom: 10, opacity: 0.85 }}>
                   <div>
-                    <b>Customer ID:</b> {customer.id}
+                    <b>Customer ID:</b>{" "}
+                    {customer.customerId != null && customer.customerId !== ""
+                      ? customer.customerId
+                      : "—"}
+                  </div>
+                  <div style={{ fontSize: 13, opacity: 0.75 }}>
+                    <b>Record id:</b> {customer.id}
                   </div>
                   <div>
                     <b>Name:</b> {customer.first_name} {customer.last_name}
@@ -241,7 +247,14 @@ export default function CustomerDetail() {
                 <form onSubmit={onAddHistory} style={{ display: "grid", gap: 10, marginBottom: 16 }}>
                   <h4 style={{ margin: 0 }}>New History Entry</h4>
 
-                  <input value={customer?.id ?? customerId} readOnly />
+                  <input
+                    value={
+                      customer?.customerId != null && customer.customerId !== ""
+                        ? String(customer.customerId)
+                        : "—"
+                    }
+                    readOnly
+                  />
                   <input value={customer?.first_name ?? ""} readOnly />
                   <input value={customer?.last_name ?? ""} readOnly />
 

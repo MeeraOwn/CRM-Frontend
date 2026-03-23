@@ -22,6 +22,7 @@ export default function Appointments() {
   const [newCustomer, setNewCustomer] = useState({
     first_name: "",
     last_name: "",
+    customerId: "",
     email: "",
     phone: "",
     brokerNumber: "",
@@ -84,6 +85,7 @@ export default function Appointments() {
       setNewCustomer({
         first_name: "",
         last_name: "",
+        customerId: "",
         email: "",
         phone: "",
         brokerNumber: "",
@@ -172,6 +174,14 @@ export default function Appointments() {
             placeholder="Last name"
             value={newCustomer.last_name}
             onChange={(e) => setNewCustomer((p) => ({ ...p, last_name: e.target.value }))}
+            required
+          />
+
+          <label style={{ fontSize: 14, opacity: 0.85 }}>Customer ID</label>
+          <input
+            placeholder="e.g. BCA-CUST-0001"
+            value={newCustomer.customerId}
+            onChange={(e) => setNewCustomer((p) => ({ ...p, customerId: e.target.value }))}
             required
           />
 
@@ -303,7 +313,9 @@ export default function Appointments() {
             const c = getAppointmentRowColor({ date: row.date, time: row.time });
             return (
               <tr key={row.history_id} style={{ background: c.bg }}>
-                <td style={{ padding: "10px 6px" }}>{row.customer_id}</td>
+                <td style={{ padding: "10px 6px" }}>
+                  {row.customerId != null && row.customerId !== "" ? row.customerId : row.customer_id}
+                </td>
                 <td style={{ padding: "10px 6px" }}>{row.first_name}</td>
                 <td style={{ padding: "10px 6px" }}>{row.last_name}</td>
                 <td style={{ padding: "10px 6px" }}>{formatDate(row.date)}</td>
